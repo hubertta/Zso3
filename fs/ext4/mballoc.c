@@ -4661,6 +4661,17 @@ void ext4_free_blocks(handle_t *handle, struct inode *inode,
 	if (!ext4_should_writeback_data(inode))
 		flags |= EXT4_FREE_BLOCKS_METADATA;
 
+	/* Handle safe file delete. */
+	{
+		int has_full_delete;
+		has_full_delete = atomic_read(&EXT4_I(inode)->full_delete);
+		if (has_full_delete)
+		{
+// 			printk(KERN_WARNING "Zeroing blocks\n");
+			sb_issue_zeroout(sb, block, count, GFP_NOFS);
+		}
+	}
+
 	/*
 	 * If the extent to be freed does not begin on a cluster
 	 * boundary, we need to deal with partial clusters at the

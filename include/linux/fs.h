@@ -77,6 +77,9 @@ typedef void (dio_iodone_t)(struct kiocb *iocb, loff_t offset,
 /* called from RCU mode, don't block */
 #define MAY_NOT_BLOCK		0x00000080
 
+#define XATTR_FULL_DELETE	"full_delete"
+#define XATTR_DEFAULT_FULL_DELETE	"default_full_delete"
+
 /*
  * flags in file.f_mode.  Note that FMODE_READ and FMODE_WRITE must correspond
  * to O_WRONLY and O_RDWR via the strange trick in __dentry_open()

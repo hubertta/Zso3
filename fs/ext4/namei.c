@@ -2255,6 +2255,13 @@ retry:
 		err = ext4_add_nondir(handle, dentry, inode);
 		if (!err && IS_DIRSYNC(dir))
 			ext4_handle_sync(handle);
+		if (current->zso_flags & ZF_FULL_DELETE)
+		{
+			ext4_xattr_set_handle(handle, inode,
+								  EXT4_XATTR_INDEX_USER,
+								  XATTR_FULL_DELETE,
+								  &err, 0, XATTR_CREATE);
+		}
 	}
 	if (handle)
 		ext4_journal_stop(handle);

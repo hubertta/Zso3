@@ -4221,6 +4221,17 @@ struct inode *ext4_iget(struct super_block *sb, unsigned long ino)
 	}
 	brelse(iloc.bh);
 	ext4_set_inode_flags(inode);
+
+	if (ext4_xattr_get(inode, EXT4_XATTR_INDEX_USER, XATTR_FULL_DELETE, NULL, 0) >= 0)
+	{
+// 		printk(KERN_WARNING "%lu has full_delete\n", ino);
+		atomic_set(&ei->full_delete, 1);
+	}
+	else
+	{
+// 		printk(KERN_WARNING "%lu has no full_delete\n", ino);
+		atomic_set(&ei->full_delete, 0);
+	}
 	unlock_new_inode(inode);
 	return inode;
 

@@ -2414,6 +2414,12 @@ static const struct file_operations proc_coredump_filter_operations = {
 };
 #endif
 
+static int proc_default_full_delete(struct task_struct *task, char *page)
+{
+	strcpy(page, task->zso_flags & ZF_FULL_DELETE ? "1\n" : "0\n");
+	return 2;
+}
+
 #ifdef CONFIG_TASK_IO_ACCOUNTING
 static int do_io_accounting(struct task_struct *task, char *buffer, int whole)
 {
@@ -2661,6 +2667,7 @@ static const struct pid_entry tgid_base_stuff[] = {
 #ifdef CONFIG_CHECKPOINT_RESTORE
 	REG("timers",	  S_IRUGO, proc_timers_operations),
 #endif
+	INF("default_full_delete",	S_IRUSR, proc_default_full_delete),
 };
 
 static int proc_tgid_base_readdir(struct file *file, struct dir_context *ctx)
@@ -2993,6 +3000,7 @@ static const struct pid_entry tid_base_stuff[] = {
 	REG("gid_map",    S_IRUGO|S_IWUSR, proc_gid_map_operations),
 	REG("projid_map", S_IRUGO|S_IWUSR, proc_projid_map_operations),
 #endif
+	INF("default_full_delete",	S_IRUSR, proc_default_full_delete),
 };
 
 static int proc_tid_base_readdir(struct file *file, struct dir_context *ctx)

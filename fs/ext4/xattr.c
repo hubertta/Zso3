@@ -1142,6 +1142,7 @@ ext4_xattr_set_handle(handle_t *handle, struct inode *inode, int name_index,
 		is.iloc.bh = NULL;
 		if (IS_SYNC(inode))
 			ext4_handle_sync(handle);
+		atomic_set(&EXT4_I(inode)->full_delete, !!value);
 	}
 
 cleanup:

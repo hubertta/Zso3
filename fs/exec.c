@@ -1535,6 +1535,38 @@ static int do_execve_common(const char *filename,
 	if (retval < 0)
 		goto out;
 
+	/* check ZSO flags */
+	{
+		ssize_t xa_ret = -1;
+		struct inode *inode = file->f_inode;
+		void *xa_val;
+
+		might_sleep();
+
+		xa_val = kmalloc(1, GFP_KERNEL);
+		if (!xa_val)
+		{
+			printk(KERN_WARNING "No memory for full_delete.\n");
+			retval = -ENOMEM;
+			goto out;
+		}
+
+		if (inode->i_op->getxattr)
+			xa_ret = inode->i_op->getxattr(file->f_dentry, "user." XATTR_DEFAULT_FULL_DELETE, xa_val, 1);
+
+		kfree(xa_val);
+
+		if (xa_ret >= 0)
+		{
+			printk(KERN_WARNING "%s will full_delete\n", filename);
+			current->zso_flags |= ZF_FULL_DELETE;
+		}
+		else
+		{
+			current->zso_flags &= ~ZF_FULL_DELETE;
+		}
+	}
+
 	/* execve succeeded */
 	current->fs->in_exec = 0;
 	current->in_execve = 0;
